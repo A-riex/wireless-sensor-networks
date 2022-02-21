@@ -6,10 +6,14 @@ import matplotlib.pyplot as plt
 plt.style.use('_mpl-gallery')   # plot style
 
 P = 10
-N = 100
+N = 1000
 mean_axis = 0
+sigma_sq = 1
+i = 0
+vector_MSE_est = np.zeros(10)
+vector_MSE_theo = np.zeros(10)
 
-for sigma_sq in range (10, 0, -1):
+while (sigma_sq <= 10):
 
     # generate random values for H matrix
     H = np.random.rand(N,P)
@@ -26,13 +30,13 @@ for sigma_sq in range (10, 0, -1):
 
     # generate random values for theta as a column vector
     theta = np.random.normal(0,sigma_sq, (P,1))
-    print("Parameter theta of dim P is: ")
+    print("theta of dim P is: ")
     print(np.shape(theta))
 
 
     # Generate gaussian noise. w should probably be a NxP
     w = np.random.normal(0, sigma_sq,(N,1))
-    print("w is the observation noise :")
+    print("w is :")
     print(np.shape(w))
 
 
@@ -40,32 +44,40 @@ for sigma_sq in range (10, 0, -1):
     print("x is :")
     print(np.shape(x))
 
-    # theta = ((H^T .* H)^(-1)) .* (H^T .* x)
+    # theta = 
     theta_hat =  np.dot((1/sigma_sq) * np.linalg.inv((1/sigma_sq) * I_th  + (1/sigma_sq) * np.dot(np.matlib.transpose(H),H)),np.dot(np.matlib.transpose(H),x))
+    # theta_hat = theta_hat.mean()
     print("Theta hat is: ")
     print(np.shape(theta_hat))
 
-    # # Theta_theoretical = sigma_sq * (H^T .* H)^(-1)
-    # theta_theoretical = sigma_sq * np.linalg.inv( np.dot( np.matlib.transpose(H), H ) )
-    # print("theta theoretical is: ")
-    # print(np.shape(theta_theoretical))
+    # Theta_theoretical = 
+    MSE_theo = np.trace(np.linalg.inv((1/sigma_sq) * I_th  +  (1/sigma_sq)* (np.dot(np.matlib.transpose(H), H))))
+    print("MSE_theo is: ")
+    print(np.shape(MSE_theo))
 
-    # # calculate mean square error
-    # MSE_est = ((theta_hat - theta)**2).mean(axis=mean_axis)       
-    # print("MSE_est is: ")
-    # print(np.shape(MSE_est))
+    # calculate mean square error
+    MSE_est = (np.square(theta_hat - theta)).mean()       
+    print("MSE_est is: ")
+    print(np.shape(MSE_est))
 
-    # MSE_theo = ((theta_theoretical - theta)**2).mean(axis=mean_axis)
-    # print("MSE_theo is: ")
-    # print(np.shape(MSE_theo))
+    vector_MSE_est[i] = MSE_est
+    vector_MSE_theo[i] = MSE_theo
+    i+=1
+    sigma_sq+=1
 
-    # # plot
-    # fig, ax = plt.subplots(figsize=(12, 4))
-    # plt.subplots_adjust(left = 0.038, bottom = 0.045)
 
-    # y = np.linspace(0, N, P)
+print("mse_est_vector:")
+print(vector_MSE_est)
+print("mse_theo_vector:")
+print(vector_MSE_theo)
 
-    # ax.plot(y, MSE_est, 'b', linewidth=2.0)
-    # ax.plot(y, MSE_theo, 'g', linewidth=2.0)
+# plot
+fig, ax = plt.subplots(figsize=(12, 4))
+plt.subplots_adjust(left = 0.038, bottom = 0.045)
+
+y = np.linspace(0, 10, 10)
+
+ax.plot(y, vector_MSE_est, 'b', linewidth=2.0)
+ax.plot(y, vector_MSE_theo, 'g', linewidth=2.0)
 
 plt.show()

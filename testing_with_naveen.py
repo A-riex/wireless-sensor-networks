@@ -26,4 +26,10 @@ if (A!=B):
     print("A!=B")
 else:
     print("if statement false")
-    
+
+
+for i in range(0, 7, 3):
+    print(i)
+
+
+
