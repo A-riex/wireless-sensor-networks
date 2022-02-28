@@ -12,58 +12,70 @@ sigma_sq = 1
 i = 0
 vector_MSE_est = np.zeros(10)
 vector_MSE_theo = np.zeros(10)
+iterations = 1
+index = 0
+MSE_est_sum = 0
+MSE_theo_sum = 0
 
 while (sigma_sq <= 10):
+    while (index <= iterations):
+        # generate random values for H matrix
+        H = np.random.rand(N,P)
+        print("Observation matrix H is: ")
+        print(np.shape(H))
 
-    # generate random values for H matrix
-    H = np.random.rand(N,P)
-    print("Observation matrix H is: ")
-    print(np.shape(H))
+        I_w = sigma_sq * np.matlib.eye(N)
+        print("I_w matrix is ")
+        print(np.shape(I_w))
 
-    I_w = sigma_sq * np.matlib.eye(N)
-    print("I_w matrix is ")
-    print(np.shape(I_w))
+        I_th = sigma_sq * np.matlib.eye(P)
+        print("I_w matrix is ")
+        print(np.shape(I_w))
 
-    I_th = sigma_sq * np.matlib.eye(P)
-    print("I_w matrix is ")
-    print(np.shape(I_w))
-
-    # generate random values for theta as a column vector
-    theta = np.random.normal(0,sigma_sq, (P,1))
-    print("theta of dim P is: ")
-    print(np.shape(theta))
-
-
-    # Generate gaussian noise. w should probably be a NxP
-    w = np.random.normal(0, sigma_sq,(N,1))
-    print("w is :")
-    print(np.shape(w))
+        # generate random values for theta as a column vector
+        theta = np.random.normal(0,sigma_sq, (P,1))
+        print("theta of dim P is: ")
+        print(np.shape(theta))
 
 
-    x = np.dot(H, theta) + w
-    print("x is :")
-    print(np.shape(x))
+        # Generate gaussian noise. w should probably be a NxP
+        w = np.random.normal(0, sigma_sq,(N,1))
+        print("w is :")
+        print(np.shape(w))
 
-    # theta = 
-    theta_hat =  np.dot((1/sigma_sq) * np.linalg.inv((1/sigma_sq) * I_th  + (1/sigma_sq) * np.dot(np.matlib.transpose(H),H)),np.dot(np.matlib.transpose(H),x))
-    # theta_hat = theta_hat.mean()
-    print("Theta hat is: ")
-    print(np.shape(theta_hat))
 
-    # Theta_theoretical = 
-    MSE_theo = np.trace(np.linalg.inv((1/sigma_sq) * I_th  +  (1/sigma_sq)* (np.dot(np.matlib.transpose(H), H))))
-    print("MSE_theo is: ")
-    print(np.shape(MSE_theo))
+        x = H @ theta + w
+        print("x is :")
+        print(np.shape(x))
 
-    # calculate mean square error
-    MSE_est = (np.square(theta_hat - theta)).mean()       
-    print("MSE_est is: ")
-    print(np.shape(MSE_est))
+        # theta = 
+        theta_hat =  (1/sigma_sq) * np.linalg.inv((1/sigma_sq) * I_th  + (1/sigma_sq) * np.matlib.transpose(H)@H) @np.matlib.transpose(H) @ x
+        # theta_hat = theta_hat.mean()
+        print("Theta hat is: ")
+        print(np.shape(theta_hat))
 
-    vector_MSE_est[i] = MSE_est
-    vector_MSE_theo[i] = MSE_theo
+        # Theta_theoretical = 
+        MSE_theo = np.trace(np.linalg.inv((1/sigma_sq) * I_th  +  (1/sigma_sq)* (np.matlib.transpose(H) @ H)))
+        print("MSE_theo is: ")
+        print(np.shape(MSE_theo))
+
+        # calculate mean square error
+        MSE_est = (np.square(theta_hat - theta)).mean()       
+        print("MSE_est is: ")
+        print(np.shape(MSE_est))
+
+        
+        MSE_est_sum = MSE_est_sum + MSE_est
+        MSE_theo_sum = MSE_theo_sum + MSE_theo
+        index += 1
+
+    vector_MSE_est[i] = MSE_est_sum /iterations
+    vector_MSE_theo[i] = MSE_theo_sum /iterations
     i+=1
     sigma_sq+=1
+    MSE_est_sum = 0
+    MSE_theo_sum = 0
+    index = 0
 
 
 print("mse_est_vector:")
