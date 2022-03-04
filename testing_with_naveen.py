@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+import numpy.random as randgen
 
 d = {"Name" : "Alexander Riex", "Age": 24, "Shoesize": 37}
 print(d)
@@ -30,6 +32,17 @@ else:
 
 for i in range(0, 7, 3):
     print(i)
+
+
+A = 5
+B = .1
+N = 100
+mu = 0
+sigma = 1
+w = randgen.normal(mu, sigma)
+seq = np.arange(0, N, 1, dtype=int)
+x = A + B*seq + w
+
 
 
 
